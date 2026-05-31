@@ -53,4 +53,4 @@ jobs:
           REDIS_HOST: 127.0.0.1
           REDIS_PORT: 6379
         run: |
-          pytest toutiao_backend/tests/ -v --tb=short
+          pytest backend/tests/ -v --tb=short

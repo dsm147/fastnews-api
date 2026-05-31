@@ -15,7 +15,6 @@
 - **数据库迁移**: Alembic
 - **测试**: pytest + httpx + pytest-asyncio
 - **限流**: slowapi
-- **监控**: Prometheus 指标
 
 ### 前端
 - **框架**: Vue 3 + Vite
@@ -29,7 +28,7 @@
 ├── 01-接口规范文档/           # API 接口文档
 ├── 02-数据库sql文件/           # 数据库初始化脚本
 ├── .github/workflows/         # GitHub Actions CI/CD
-├── toutiao_backend/           # 后端 API 服务
+├── backend/                 # 后端 API 服务
 │   ├── main.py               # 应用入口
 │   ├── services/             # 业务逻辑层 (Service 层)
 │   ├── crud/                 # 数据访问层 (CRUD)
@@ -41,7 +40,7 @@
 │   ├── cache/                # Redis 缓存层（含缓存失效机制）
 │   └── tests/                # 测试套件（46 项测试）
 ├── alembic/                  # 数据库迁移脚本
-├── frontened/                # Vue 3 前端
+├── frontend/                # Vue 3 前端
 ├── Dockerfile                # Docker 容器化
 ├── docker-compose.yml        # Docker 多服务编排
 └── requirements.txt          # Python 依赖
@@ -93,11 +92,11 @@ cp .env.example .env
 
 ```bash
 # 启动后端服务
-cd toutiao_backend
+cd backend
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
 # 启动前端 (新开终端)
-cd frontened
+cd frontend
 npm install
 npm run dev
 ```
@@ -134,10 +133,10 @@ alembic downgrade -1
 
 ```bash
 # 运行所有测试
-pytest toutiao_backend/tests/ -v
+pytest backend/tests/ -v
 
 # 运行指定测试模块
-pytest toutiao_backend/tests/test_security.py -v
+pytest backend/tests/test_security.py -v
 ```
 
 ## CI/CD

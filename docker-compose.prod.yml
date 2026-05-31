@@ -1,0 +1,111 @@
+version: "3.8"
+
+# 生产环境部署配置
+# 使用: docker-compose -f docker-compose.prod.yml up -d --build
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: toutiao-app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=mysql+aiomysql://root:123456@db:3306/news_app?charset=utf8mb4
+      - REDIS_HOST=cache
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - DEBUG=false
+      - CORS_ORIGINS=https://your-domain.com
+      - RATE_LIMIT_ENABLED=true
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_started
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - toutiao-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  db:
+    image: mysql:8.0
+    container_name: toutiao-db
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./02-数据库sql文件/database.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=news_app
+      - MYSQL_CHARACTER_SET_SERVER=utf8mb4
+      - MYSQL_COLLATION_SERVER=utf8mb4_unicode_ci
+    # 生产环境不暴露端口到宿主机（仅内部访问）
+    # ports:
+    #   - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - toutiao-network
+
+  cache:
+    image: redis:7-alpine
+    container_name: toutiao-cache
+    volumes:
+      - redis_data:/data
+    # 生产环境不暴露端口
+    # ports:
+    #   - "6380:6379"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - toutiao-network
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  toutiao-network:
+    driver: bridge
