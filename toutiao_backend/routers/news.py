@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -31,14 +33,15 @@ async def get_categories(skip: int = 0, limit: int = 100, db: AsyncSession = Dep
 @router.get("/list")
 async def get_news_list(
         category_id: int = Query(..., alias="categoryId"),
-        page: int = 1,
-        page_size: int = Query(10, alias="pageSize", le=100),
+        page: int = Query(1, ge=1),
+        page_size: int = Query(10, alias="pageSize", ge=1, le=100),
+        keyword: Optional[str] = None,
         db: AsyncSession = Depends(get_db)
 ):
     # 思路：处理分页规则 → 查询新闻列表 → 计算总量 → 计算是否还有更多
     offset = (page - 1) * page_size
-    news_list = await news_cache.get_news_list(db, category_id, offset, page_size)
-    total = await news.get_news_count(db, category_id)
+    news_list = await news_cache.get_news_list(db, category_id, offset, page_size, keyword)
+    total = await news.get_news_count(db, category_id, keyword)
     # (跳过的 + 当前列表里面的数量) < 总量
     has_more = (offset + len(news_list)) < total
     return {

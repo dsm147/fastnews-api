@@ -4,8 +4,12 @@ from pydantic import BaseModel, Field, ConfigDict
 
 
 class UserRequest(BaseModel):
-    username: str
-    password: str
+    username: str = Field(
+        min_length=2, max_length=50,
+        pattern=r"^[a-zA-Z0-9_]+$",
+        description="用户名（只能包含字母、数字和下划线）"
+    )
+    password: str = Field(min_length=6, max_length=50)
 
 
 # user_info 对应的类：基础类 + Info 类（id、用户名）

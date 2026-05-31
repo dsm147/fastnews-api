@@ -1,0 +1,66 @@
+version: "3.8"
+
+services:
+  # FastAPI 应用
+  app:
+    build: .
+    container_name: toutiao-app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=mysql+aiomysql://root:123456@db:3306/news_app?charset=utf8mb4
+      - REDIS_HOST=cache
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - DEBUG=false
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - toutiao-network
+
+  # MySQL 数据库
+  db:
+    image: mysql:8.0
+    container_name: toutiao-db
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./02-数据库sql文件/database.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=news_app
+      - MYSQL_CHARACTER_SET_SERVER=utf8mb4
+      - MYSQL_COLLATION_SERVER=utf8mb4_unicode_ci
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - toutiao-network
+
+  # Redis 缓存
+  cache:
+    image: redis:7-alpine
+    container_name: toutiao-cache
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6380:6379"
+    restart: unless-stopped
+    networks:
+      - toutiao-network
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  toutiao-network:
+    driver: bridge

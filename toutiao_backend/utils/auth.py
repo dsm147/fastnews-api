@@ -19,3 +19,10 @@ async def get_current_user(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="无效的令牌或已经过期的令牌")
 
     return user
+
+
+# 只返回用户ID，不返回完整用户对象（轻量级依赖）
+async def get_current_user_id(
+    current_user = Depends(get_current_user)
+) -> int:
+    return current_user.id

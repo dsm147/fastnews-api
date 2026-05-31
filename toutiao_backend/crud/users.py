@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timedelta
 
 from fastapi import HTTPException
-from sqlalchemy import select, update
+from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.users import User, UserToken
@@ -107,3 +107,11 @@ async def change_password(db: AsyncSession, user: User, old_password: str, new_p
     await db.commit()
     await db.refresh(user)
     return True
+
+
+async def invalidate_user_tokens(db: AsyncSession, user_id: int):
+    """使指定用户的所有 Token 失效（删除所有 Token 记录）"""
+    stmt = delete(UserToken).where(UserToken.user_id == user_id)
+    result = await db.execute(stmt)
+    await db.commit()
+    return result.rowcount
