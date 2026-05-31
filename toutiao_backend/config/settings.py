@@ -19,6 +19,18 @@ class Settings(BaseSettings):
     # Token 过期时间（天）
     token_expire_days: int = 7
 
+    # JWT
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 30
+    refresh_token_expire_days: int = 7
+
+    # CORS（生产环境设为具体域名，多个用逗号分隔）
+    cors_origins: str = "*"
+
+    # Rate Limiting
+    rate_limit_enabled: bool = True
+    rate_limit_per_minute: int = 10
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

@@ -112,3 +112,50 @@ async def get_cached_related_news(news_id: int, category_id: int) -> Optional[Li
     """
     key = f"{RELATED_NEWS_PREFIX}{news_id}:{category_id}"
     return await get_json_cache(key)
+
+
+# ── 缓存失效函数 ──────────────────────────────────────────────
+
+async def invalidate_categories_cache():
+    """删除新闻分类缓存"""
+    await _delete_key(CATEGORIES_KEY)
+
+
+async def invalidate_news_list_cache(category_id: Optional[int] = None):
+    """删除新闻列表缓存。指定 category_id 则只删除该分类，否则全部"""
+    if category_id is not None:
+        pattern = f"{NEWS_LIST_PREFIX}{category_id}:*"
+    else:
+        pattern = f"{NEWS_LIST_PREFIX}*"
+    await _delete_pattern(pattern)
+
+
+async def invalidate_news_detail_cache(news_id: int):
+    """删除指定新闻的详情缓存"""
+    key = f"{NEWS_DETAIL_PREFIX}{news_id}"
+    await _delete_key(key)
+
+
+async def invalidate_related_news_cache(news_id: int, category_id: int):
+    """删除指定新闻的相关新闻缓存"""
+    key = f"{RELATED_NEWS_PREFIX}{news_id}:{category_id}"
+    await _delete_key(key)
+
+
+async def _delete_key(key: str):
+    """删除单个缓存键"""
+    from config.cache_conf import redis_client
+    try:
+        await redis_client.delete(key)
+    except Exception:
+        pass
+
+
+async def _delete_pattern(pattern: str):
+    """按模式批量删除缓存键（使用非阻塞 scan_iter）"""
+    from config.cache_conf import redis_client
+    try:
+        async for key in redis_client.scan_iter(match=pattern):
+            await redis_client.delete(key)
+    except Exception:
+        pass

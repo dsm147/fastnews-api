@@ -24,3 +24,10 @@ Thumbs.db
 
 # Alembic cache
 alembic/__pycache__/
+
+# Tutorial / Learning
+tutorial/
+
+# Claude
+.claude/
+CLAUDE.md

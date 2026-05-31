@@ -35,7 +35,8 @@ class UserInfoResponse(UserInfoBase):
 
 # data 数据类型
 class UserAuthResponse(BaseModel):
-    token: str
+    access_token: str = Field(..., alias="accessToken")
+    refresh_token: str = Field(..., alias="refreshToken")
     user_info: UserInfoResponse = Field(..., alias="userInfo")
 
     # 模型类配置

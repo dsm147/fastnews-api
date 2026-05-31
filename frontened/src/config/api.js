@@ -12,10 +12,11 @@ export const apiConfig = {
 export const aiChatConfig = {
   // OpenAI API地址
   apiEndpoint: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
-  
-  // API Key (由开发人员指定)
-  apiKey: 'sk-04212dd1084d4ef2aa9aa814f80663fc',
-  
+
+  // API Key（通过环境变量配置，请勿硬编码到代码中）
+  // 在 .env 文件中设置 VITE_DASHSCOPE_API_KEY=your_key_here
+  apiKey: import.meta.env.VITE_DASHSCOPE_API_KEY || '',
+
   // 使用的模型
   model: 'qwen3-max-preview'
 }

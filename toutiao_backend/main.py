@@ -1,32 +1,42 @@
 import time
 
 from fastapi import FastAPI
-from routers import news, users, favorite, history
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
+from config.limiter import limiter
+from routers import news, users, favorite, history
 from utils.exception_handlers import register_exception_handlers
 from config.logging_conf import setup_logging
+from config.settings import settings
 
 # 启动时配置日志
 setup_logging()
 
-app = FastAPI()
+app = FastAPI(title="AI 掘金头条 API", version="v1.0.0")
 
 # 应用启动时间
 _start_time = time.time()
 
-# 注册异常处理器
-register_exception_handlers(app)
+# ── Rate Limiting ──────────────────────────────────────────
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-
+# ── CORS ───────────────────────────────────────────────────
+origins_str = settings.cors_origins
+cors_origins_list = [o.strip() for o in origins_str.split(",")] if origins_str != "*" else ["*"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],     # 允许的源，开发阶段允许所有源，生产环境需要指定源
-    allow_credentials=True,  # 允许携带cookie
-    allow_methods=["*"],     # 允许的请求方法
-    allow_headers=["*"],     # 允许的请求头
+    allow_origins=cors_origins_list,
+    allow_credentials=(origins_str != "*"),
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+
+# 注册异常处理器
+register_exception_handlers(app)
 
 
 @app.get("/")

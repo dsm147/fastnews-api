@@ -5,6 +5,10 @@ from httpx import AsyncClient, ASGITransport
 from sqlalchemy import MetaData
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession, create_async_engine
 
+# 必须在导入 main 之前禁用 Rate Limiting（因为路由装饰器在 import 时执行）
+from config.settings import settings
+settings.rate_limit_enabled = False
+
 from main import app
 from config.db_conf import get_db
 from models.news import Base as NewsBase
