@@ -28,6 +28,9 @@ alembic/__pycache__/
 # Tutorial / Learning
 tutorial/
 
+# Frontend dependencies
+frontened/node_modules/
+
 # Claude
 .claude/
 CLAUDE.md
