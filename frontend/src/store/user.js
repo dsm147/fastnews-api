@@ -21,7 +21,7 @@ export const useUserStore = defineStore('user', {
     async login(userData) {
       try {
         // 发送登录请求
-        const response = await axios.post(`${apiConfig.baseURL}/api/user/login`, {
+        const response = await axios.post(`${apiConfig.baseURL}/user/login`, {
           username: userData.username,
           password: userData.password
         });
@@ -59,7 +59,7 @@ export const useUserStore = defineStore('user', {
     async register(userData) {
       try {
         // 发送注册请求
-        const response = await axios.post(`${apiConfig.baseURL}/api/user/register`, {
+        const response = await axios.post(`${apiConfig.baseURL}/user/register`, {
           username: userData.username,
           password: userData.password
         });
@@ -112,7 +112,7 @@ export const useUserStore = defineStore('user', {
         }
         
         // 发送获取用户信息请求
-        const response = await axios.get(`${apiConfig.baseURL}/api/user/info`, {
+        const response = await axios.get(`${apiConfig.baseURL}/user/info`, {
           headers: {
             // Authorization: `Bearer ${this.token}`
             Authorization: this.token
@@ -156,7 +156,7 @@ export const useUserStore = defineStore('user', {
         }
         
         // 发送更新个人简介请求
-        const response = await axios.put(`${apiConfig.baseURL}/api/user/update`, 
+        const response = await axios.put(`${apiConfig.baseURL}/user/update`, 
           { bio },
           {
             headers: {
@@ -201,7 +201,7 @@ export const useUserStore = defineStore('user', {
         }
         
         // 发送修改密码请求
-        const response = await axios.put(`${apiConfig.baseURL}/api/user/password`, 
+        const response = await axios.put(`${apiConfig.baseURL}/user/password`, 
           { 
             oldPassword,
             newPassword 

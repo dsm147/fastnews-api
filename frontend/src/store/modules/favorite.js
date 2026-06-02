@@ -32,7 +32,7 @@ export const useFavoriteStore = defineStore('favorite', {
       
         try {
           this.loading = true;
-          const response = await axios.get(`${apiConfig.baseURL}/api/favorite/check`, { 
+          const response = await axios.get(`${apiConfig.baseURL}/favorite/check`, { 
             headers: { 
               Authorization: userStore.token 
             },
@@ -72,7 +72,7 @@ export const useFavoriteStore = defineStore('favorite', {
       
       try {
         this.loading = true;
-        const response = await axios.post(`${apiConfig.baseURL}/api/favorite/add`, 
+        const response = await axios.post(`${apiConfig.baseURL}/favorite/add`, 
           { newsId },
           { 
             headers: { 
@@ -105,7 +105,7 @@ export const useFavoriteStore = defineStore('favorite', {
       
       try {
         this.loading = true;
-        const response = await axios.delete(`${apiConfig.baseURL}/api/favorite/remove?newsId=${newsId}`, { 
+        const response = await axios.delete(`${apiConfig.baseURL}/favorite/remove?newsId=${newsId}`, { 
           headers: { 
             Authorization: userStore.token 
           }
@@ -192,7 +192,7 @@ export const useFavoriteStore = defineStore('favorite', {
       
       try {
         this.loading = true;
-        const response = await axios.delete(`${apiConfig.baseURL}/api/favorite/clear`, { 
+        const response = await axios.delete(`${apiConfig.baseURL}/favorite/clear`, { 
           headers: { 
             Authorization: userStore.token 
           }
@@ -243,8 +243,8 @@ export const useFavoriteStore = defineStore('favorite', {
       
       try {
         this.loading = true;
-        console.log('准备发送API请求', `${apiConfig.baseURL}/api/favorite/list`);
-        const response = await axios.get(`${apiConfig.baseURL}/api/favorite/list`, { 
+        console.log('准备发送API请求', `${apiConfig.baseURL}/favorite/list`);
+        const response = await axios.get(`${apiConfig.baseURL}/favorite/list`, { 
           headers: { 
             Authorization: userStore.token 
           },
